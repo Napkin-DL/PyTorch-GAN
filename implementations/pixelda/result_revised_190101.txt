@@ -1,0 +1,245 @@
+Namespace(b1=0.5, b2=0.999, batch_size=64, channels=3, img_size=32, latent_dim=10, lr=0.0002, n_classes=10, n_cpu=8, n_epochs=200, n_residual_blocks=1, sample_interval=300)
+cuda : True
+classname : Linear
+classname : Conv2d
+classname : ReLU
+classname : Sequential
+classname : Conv2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : Conv2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : Sequential
+classname : tencode_ResidualBlock
+classname : Sequential
+classname : target_encode_Generator
+classname : ConvTranspose2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : ConvTranspose2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : Sequential
+classname : tdecode_ResidualBlock
+classname : Sequential
+classname : Conv2d
+classname : Tanh
+classname : Sequential
+classname : target_decode_Generator
+classname : Linear
+classname : Conv2d
+classname : ReLU
+classname : Sequential
+classname : Conv2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : Conv2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : Sequential
+classname : sencode_ResidualBlock
+classname : Sequential
+classname : source_encode_Generator
+classname : ConvTranspose2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : ConvTranspose2d
+classname : BatchNorm2d
+classname : LeakyReLU
+classname : Sequential
+classname : sdecode_ResidualBlock
+classname : Sequential
+classname : Conv2d
+classname : Tanh
+classname : Sequential
+classname : source_decode_Generator
+classname : Conv2d
+classname : LeakyReLU
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : Sequential
+classname : encode_Discriminator
+classname : Conv2d
+classname : LeakyReLU
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : Sequential
+classname : Discriminator
+classname : Conv2d
+classname : LeakyReLU
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Conv2d
+classname : LeakyReLU
+classname : InstanceNorm2d
+classname : Sequential
+classname : Linear
+classname : Softmax
+classname : Sequential
+classname : Classifier
+[Epoch 0/200] [Batch 0/938] [D loss: 2.111622] [G loss: 2.125814] [CLF acc:   7% (  7%), target_acc:  23% ( 23%)]
+[Epoch 0/200] [Batch 1/938] [D loss: 14.527190] [G loss: 17.152264] [CLF acc:   7% (  7%), target_acc:  21% ( 22%)]
+[Epoch 0/200] [Batch 2/938] [D loss: 0.892481] [G loss: 0.737106] [CLF acc:   7% (  7%), target_acc:  21% ( 22%)]
+[Epoch 0/200] [Batch 3/938] [D loss: 2.807442] [G loss: 3.793478] [CLF acc:  14% (  9%), target_acc:  20% ( 21%)]
+[Epoch 0/200] [Batch 4/938] [D loss: 0.909174] [G loss: 1.422441] [CLF acc:  10% (  9%), target_acc:  34% ( 24%)]
+[Epoch 0/200] [Batch 5/938] [D loss: 0.985749] [G loss: 1.386182] [CLF acc:  12% ( 10%), target_acc:  26% ( 24%)]
+[Epoch 0/200] [Batch 6/938] [D loss: 0.852660] [G loss: 0.810960] [CLF acc:  31% ( 13%), target_acc:  40% ( 27%)]
+[Epoch 0/200] [Batch 7/938] [D loss: 0.662987] [G loss: 1.027565] [CLF acc:   6% ( 12%), target_acc:  43% ( 29%)]
+[Epoch 0/200] [Batch 8/938] [D loss: 0.703865] [G loss: 0.988709] [CLF acc:  18% ( 13%), target_acc:  54% ( 31%)]
+[Epoch 0/200] [Batch 9/938] [D loss: 0.768382] [G loss: 0.690462] [CLF acc:  17% ( 13%), target_acc:  32% ( 32%)]
+[Epoch 0/200] [Batch 10/938] [D loss: 0.780031] [G loss: 0.925285] [CLF acc:  21% ( 14%), target_acc:  40% ( 32%)]
+[Epoch 0/200] [Batch 11/938] [D loss: 0.980056] [G loss: 0.765892] [CLF acc:   9% ( 13%), target_acc:  28% ( 32%)]
+[Epoch 0/200] [Batch 12/938] [D loss: 1.278964] [G loss: 2.232174] [CLF acc:  15% ( 13%), target_acc:  37% ( 32%)]
+[Epoch 0/200] [Batch 13/938] [D loss: 1.503567] [G loss: 1.592016] [CLF acc:  17% ( 14%), target_acc:  37% ( 33%)]
+[Epoch 0/200] [Batch 14/938] [D loss: 1.090698] [G loss: 1.071149] [CLF acc:  12% ( 14%), target_acc:  42% ( 33%)]
+[Epoch 0/200] [Batch 15/938] [D loss: 0.926968] [G loss: 1.827847] [CLF acc:  25% ( 14%), target_acc:  35% ( 33%)]
+[Epoch 0/200] [Batch 16/938] [D loss: 0.993838] [G loss: 0.463377] [CLF acc:  20% ( 15%), target_acc:  40% ( 34%)]
+[Epoch 0/200] [Batch 17/938] [D loss: 0.711647] [G loss: 0.854547] [CLF acc:  15% ( 15%), target_acc:  40% ( 34%)]
+[Epoch 0/200] [Batch 18/938] [D loss: 0.718583] [G loss: 0.741979] [CLF acc:  21% ( 15%), target_acc:  40% ( 34%)]
+[Epoch 0/200] [Batch 19/938] [D loss: 0.777227] [G loss: 0.652191] [CLF acc:  17% ( 15%), target_acc:  43% ( 35%)]
+[Epoch 0/200] [Batch 20/938] [D loss: 0.843216] [G loss: 0.851356] [CLF acc:  26% ( 16%), target_acc:  42% ( 35%)]
+[Epoch 0/200] [Batch 21/938] [D loss: 1.153929] [G loss: 1.402092] [CLF acc:  18% ( 16%), target_acc:  42% ( 36%)]
+[Epoch 0/200] [Batch 22/938] [D loss: 1.857815] [G loss: 1.495114] [CLF acc:  21% ( 16%), target_acc:  43% ( 36%)]
+[Epoch 0/200] [Batch 23/938] [D loss: 1.311534] [G loss: 1.831853] [CLF acc:  23% ( 16%), target_acc:  39% ( 36%)]
+[Epoch 0/200] [Batch 24/938] [D loss: 0.728756] [G loss: 0.916736] [CLF acc:   9% ( 16%), target_acc:  45% ( 36%)]
+[Epoch 0/200] [Batch 25/938] [D loss: 0.821245] [G loss: 0.522132] [CLF acc:  29% ( 16%), target_acc:  51% ( 37%)]
+[Epoch 0/200] [Batch 26/938] [D loss: 0.740624] [G loss: 0.624885] [CLF acc:  15% ( 16%), target_acc:  43% ( 37%)]
+[Epoch 0/200] [Batch 27/938] [D loss: 0.739813] [G loss: 0.811795] [CLF acc:  15% ( 16%), target_acc:  31% ( 37%)]
+[Epoch 0/200] [Batch 28/938] [D loss: 0.764009] [G loss: 0.495341] [CLF acc:  14% ( 16%), target_acc:  42% ( 37%)]
+[Epoch 0/200] [Batch 29/938] [D loss: 0.734790] [G loss: 0.600545] [CLF acc:  26% ( 17%), target_acc:  43% ( 37%)]
+[Epoch 0/200] [Batch 30/938] [D loss: 0.736340] [G loss: 0.686527] [CLF acc:  23% ( 17%), target_acc:  54% ( 38%)]
+[Epoch 0/200] [Batch 31/938] [D loss: 0.716562] [G loss: 0.603908] [CLF acc:  29% ( 17%), target_acc:  43% ( 38%)]
+[Epoch 0/200] [Batch 32/938] [D loss: 0.705094] [G loss: 0.748374] [CLF acc:  32% ( 18%), target_acc:  37% ( 38%)]
+[Epoch 0/200] [Batch 33/938] [D loss: 0.712501] [G loss: 0.613301] [CLF acc:  35% ( 18%), target_acc:  39% ( 38%)]
+[Epoch 0/200] [Batch 34/938] [D loss: 0.682165] [G loss: 0.808923] [CLF acc:  31% ( 19%), target_acc:  35% ( 38%)]
+[Epoch 0/200] [Batch 35/938] [D loss: 0.737851] [G loss: 0.688504] [CLF acc:  25% ( 19%), target_acc:  40% ( 38%)]
+[Epoch 0/200] [Batch 36/938] [D loss: 0.824642] [G loss: 0.984591] [CLF acc:   6% ( 18%), target_acc:  40% ( 38%)]
+[Epoch 0/200] [Batch 37/938] [D loss: 1.149373] [G loss: 0.734226] [CLF acc:  26% ( 19%), target_acc:  50% ( 38%)]
+[Epoch 0/200] [Batch 38/938] [D loss: 0.985139] [G loss: 1.416927] [CLF acc:  14% ( 18%), target_acc:  50% ( 39%)]
+[Epoch 0/200] [Batch 39/938] [D loss: 0.834004] [G loss: 0.734266] [CLF acc:  20% ( 18%), target_acc:  56% ( 39%)]
+[Epoch 0/200] [Batch 40/938] [D loss: 0.759136] [G loss: 0.585346] [CLF acc:  20% ( 18%), target_acc:  42% ( 39%)]
+[Epoch 0/200] [Batch 41/938] [D loss: 0.722363] [G loss: 0.921962] [CLF acc:  40% ( 19%), target_acc:  39% ( 39%)]
+[Epoch 0/200] [Batch 42/938] [D loss: 0.747224] [G loss: 0.559008] [CLF acc:  20% ( 19%), target_acc:  50% ( 39%)]
+[Epoch 0/200] [Batch 43/938] [D loss: 0.725548] [G loss: 0.577730] [CLF acc:  31% ( 19%), target_acc:  45% ( 39%)]
+[Epoch 0/200] [Batch 44/938] [D loss: 0.731059] [G loss: 0.775837] [CLF acc:  34% ( 20%), target_acc:  54% ( 40%)]
+[Epoch 0/200] [Batch 45/938] [D loss: 0.791944] [G loss: 0.480212] [CLF acc:  39% ( 20%), target_acc:  48% ( 40%)]
+[Epoch 0/200] [Batch 46/938] [D loss: 0.765257] [G loss: 0.772384] [CLF acc:  31% ( 20%), target_acc:  35% ( 40%)]
+[Epoch 0/200] [Batch 47/938] [D loss: 0.775360] [G loss: 0.583971] [CLF acc:  26% ( 20%), target_acc:  45% ( 40%)]
+[Epoch 0/200] [Batch 48/938] [D loss: 0.779501] [G loss: 0.771549] [CLF acc:  34% ( 21%), target_acc:  56% ( 40%)]
+[Epoch 0/200] [Batch 49/938] [D loss: 0.788615] [G loss: 0.815243] [CLF acc:  21% ( 21%), target_acc:  53% ( 41%)]
+[Epoch 0/200] [Batch 50/938] [D loss: 0.823362] [G loss: 0.608068] [CLF acc:  25% ( 21%), target_acc:  43% ( 41%)]
+[Epoch 0/200] [Batch 51/938] [D loss: 0.792385] [G loss: 0.831558] [CLF acc:  32% ( 21%), target_acc:  46% ( 41%)]
+[Epoch 0/200] [Batch 52/938] [D loss: 0.800618] [G loss: 0.558082] [CLF acc:  32% ( 21%), target_acc:  46% ( 41%)]
+[Epoch 0/200] [Batch 53/938] [D loss: 0.772004] [G loss: 0.628241] [CLF acc:  46% ( 22%), target_acc:  45% ( 41%)]
+[Epoch 0/200] [Batch 54/938] [D loss: 0.763932] [G loss: 0.702254] [CLF acc:  37% ( 22%), target_acc:  42% ( 41%)]
+[Epoch 0/200] [Batch 55/938] [D loss: 0.803340] [G loss: 0.455504] [CLF acc:  42% ( 22%), target_acc:  45% ( 41%)]
+[Epoch 0/200] [Batch 56/938] [D loss: 0.734285] [G loss: 0.901484] [CLF acc:  51% ( 23%), target_acc:  48% ( 41%)]
+[Epoch 0/200] [Batch 57/938] [D loss: 0.712160] [G loss: 0.511743] [CLF acc:  35% ( 23%), target_acc:  62% ( 41%)]
+[Epoch 0/200] [Batch 58/938] [D loss: 0.669688] [G loss: 0.773523] [CLF acc:  56% ( 24%), target_acc:  40% ( 41%)]
+[Epoch 0/200] [Batch 59/938] [D loss: 0.703458] [G loss: 0.556745] [CLF acc:  50% ( 24%), target_acc:  42% ( 41%)]
+[Epoch 0/200] [Batch 60/938] [D loss: 0.737468] [G loss: 0.600673] [CLF acc:  57% ( 25%), target_acc:  48% ( 42%)]
+[Epoch 0/200] [Batch 61/938] [D loss: 0.807984] [G loss: 0.415063] [CLF acc:  62% ( 25%), target_acc:  37% ( 41%)]
+[Epoch 0/200] [Batch 62/938] [D loss: 0.845714] [G loss: 0.822577] [CLF acc:  59% ( 26%), target_acc:  53% ( 42%)]
+[Epoch 0/200] [Batch 63/938] [D loss: 0.893500] [G loss: 0.587479] [CLF acc:  50% ( 26%), target_acc:  48% ( 42%)]
+[Epoch 0/200] [Batch 64/938] [D loss: 0.850062] [G loss: 1.010646] [CLF acc:  45% ( 26%), target_acc:  48% ( 42%)]
+[Epoch 0/200] [Batch 65/938] [D loss: 0.770473] [G loss: 0.798373] [CLF acc:  64% ( 27%), target_acc:  43% ( 42%)]
+[Epoch 0/200] [Batch 66/938] [D loss: 0.781532] [G loss: 0.432901] [CLF acc:  60% ( 27%), target_acc:  54% ( 42%)]
+[Epoch 0/200] [Batch 67/938] [D loss: 0.751394] [G loss: 0.822328] [CLF acc:  48% ( 28%), target_acc:  43% ( 42%)]
+[Epoch 0/200] [Batch 68/938] [D loss: 0.755757] [G loss: 0.484623] [CLF acc:  59% ( 28%), target_acc:  40% ( 42%)]
+[Epoch 0/200] [Batch 69/938] [D loss: 0.751670] [G loss: 0.521997] [CLF acc:  37% ( 28%), target_acc:  45% ( 42%)]
+[Epoch 0/200] [Batch 70/938] [D loss: 0.730421] [G loss: 0.643852] [CLF acc:  53% ( 29%), target_acc:  37% ( 42%)]
+[Epoch 0/200] [Batch 71/938] [D loss: 0.715359] [G loss: 0.543661] [CLF acc:  56% ( 29%), target_acc:  56% ( 42%)]
+[Epoch 0/200] [Batch 72/938] [D loss: 0.701155] [G loss: 0.653318] [CLF acc:  42% ( 29%), target_acc:  54% ( 42%)]
+[Epoch 0/200] [Batch 73/938] [D loss: 0.737929] [G loss: 0.571573] [CLF acc:  64% ( 30%), target_acc:  53% ( 42%)]
+[Epoch 0/200] [Batch 74/938] [D loss: 0.743266] [G loss: 0.548125] [CLF acc:  59% ( 30%), target_acc:  37% ( 42%)]
+[Epoch 0/200] [Batch 75/938] [D loss: 0.741227] [G loss: 0.643625] [CLF acc:  71% ( 31%), target_acc:  42% ( 42%)]
+[Epoch 0/200] [Batch 76/938] [D loss: 0.742858] [G loss: 0.588071] [CLF acc:  62% ( 31%), target_acc:  56% ( 43%)]
+[Epoch 0/200] [Batch 77/938] [D loss: 0.757365] [G loss: 0.819404] [CLF acc:  59% ( 31%), target_acc:  54% ( 43%)]
+[Epoch 0/200] [Batch 78/938] [D loss: 0.797210] [G loss: 0.580865] [CLF acc:  64% ( 32%), target_acc:  46% ( 43%)]
+[Epoch 0/200] [Batch 79/938] [D loss: 0.810130] [G loss: 0.628626] [CLF acc:  67% ( 32%), target_acc:  53% ( 43%)]
+[Epoch 0/200] [Batch 80/938] [D loss: 0.883891] [G loss: 0.913143] [CLF acc:  56% ( 32%), target_acc:  39% ( 43%)]
+[Epoch 0/200] [Batch 81/938] [D loss: 0.985900] [G loss: 0.440796] [CLF acc:  57% ( 33%), target_acc:  45% ( 43%)]
+[Epoch 0/200] [Batch 82/938] [D loss: 0.740161] [G loss: 0.951564] [CLF acc:  64% ( 33%), target_acc:  46% ( 43%)]
+[Epoch 0/200] [Batch 83/938] [D loss: 0.671971] [G loss: 0.752860] [CLF acc:  50% ( 33%), target_acc:  53% ( 43%)]
+[Epoch 0/200] [Batch 84/938] [D loss: 0.679142] [G loss: 0.531775] [CLF acc:  54% ( 34%), target_acc:  54% ( 43%)]
+[Epoch 0/200] [Batch 85/938] [D loss: 0.649031] [G loss: 0.799663] [CLF acc:  62% ( 34%), target_acc:  50% ( 43%)]
+[Epoch 0/200] [Batch 86/938] [D loss: 0.750592] [G loss: 0.456466] [CLF acc:  56% ( 34%), target_acc:  48% ( 43%)]
+[Epoch 0/200] [Batch 87/938] [D loss: 0.856366] [G loss: 0.627559] [CLF acc:  65% ( 35%), target_acc:  50% ( 43%)]
+[Epoch 0/200] [Batch 88/938] [D loss: 0.914333] [G loss: 0.360204] [CLF acc:  71% ( 35%), target_acc:  50% ( 43%)]
+[Epoch 0/200] [Batch 89/938] [D loss: 0.804328] [G loss: 0.640369] [CLF acc:  60% ( 35%), target_acc:  39% ( 43%)]
+[Epoch 0/200] [Batch 90/938] [D loss: 0.732730] [G loss: 0.642254] [CLF acc:  71% ( 36%), target_acc:  46% ( 43%)]
+[Epoch 0/200] [Batch 91/938] [D loss: 0.685394] [G loss: 0.605208] [CLF acc:  64% ( 36%), target_acc:  40% ( 43%)]
+[Epoch 0/200] [Batch 92/938] [D loss: 0.676388] [G loss: 0.697567] [CLF acc:  71% ( 36%), target_acc:  37% ( 43%)]
+[Epoch 0/200] [Batch 93/938] [D loss: 0.705482] [G loss: 0.607633] [CLF acc:  68% ( 37%), target_acc:  54% ( 43%)]
+[Epoch 0/200] [Batch 94/938] [D loss: 0.805417] [G loss: 0.501162] [CLF acc:  75% ( 37%), target_acc:  57% ( 44%)]
+[Epoch 0/200] [Batch 95/938] [D loss: 0.872170] [G loss: 0.660797] [CLF acc:  76% ( 37%), target_acc:  42% ( 44%)]
+[Epoch 0/200] [Batch 96/938] [D loss: 0.914393] [G loss: 0.622268] [CLF acc:  70% ( 38%), target_acc:  50% ( 44%)]
+[Epoch 0/200] [Batch 97/938] [D loss: 0.942094] [G loss: 0.887387] [CLF acc:  68% ( 38%), target_acc:  48% ( 44%)]
+[Epoch 0/200] [Batch 98/938] [D loss: 0.834547] [G loss: 0.609925] [CLF acc:  71% ( 38%), target_acc:  43% ( 44%)]
+[Epoch 0/200] [Batch 99/938] [D loss: 0.727788] [G loss: 0.581084] [CLF acc:  67% ( 39%), target_acc:  48% ( 44%)]
+[Epoch 0/200] [Batch 100/938] [D loss: 0.724273] [G loss: 0.634504] [CLF acc:  87% ( 40%), target_acc:  54% ( 44%)]
+[Epoch 0/200] [Batch 101/938] [D loss: 0.742035] [G loss: 0.507083] [CLF acc:  82% ( 40%), target_acc:  45% ( 44%)]
+[Epoch 0/200] [Batch 102/938] [D loss: 0.746136] [G loss: 0.504748] [CLF acc:  79% ( 41%), target_acc:  45% ( 44%)]
+[Epoch 0/200] [Batch 103/938] [D loss: 0.744539] [G loss: 0.506712] [CLF acc:  81% ( 42%), target_acc:  54% ( 45%)]
+[Epoch 0/200] [Batch 104/938] [D loss: 0.757722] [G loss: 0.589083] [CLF acc:  76% ( 42%), target_acc:  51% ( 45%)]
+[Epoch 0/200] [Batch 105/938] [D loss: 0.744661] [G loss: 0.483849] [CLF acc:  76% ( 43%), target_acc:  54% ( 45%)]
+[Epoch 0/200] [Batch 106/938] [D loss: 0.706435] [G loss: 0.547005] [CLF acc:  78% ( 43%), target_acc:  39% ( 45%)]
+[Epoch 0/200] [Batch 107/938] [D loss: 0.667563] [G loss: 0.653386] [CLF acc:  71% ( 44%), target_acc:  54% ( 45%)]
+[Epoch 0/200] [Batch 108/938] [D loss: 0.659778] [G loss: 0.610552] [CLF acc:  75% ( 45%), target_acc:  51% ( 45%)]
+[Epoch 0/200] [Batch 109/938] [D loss: 0.660473] [G loss: 0.714032] [CLF acc:  84% ( 45%), target_acc:  45% ( 45%)]
+[Epoch 0/200] [Batch 110/938] [D loss: 0.759697] [G loss: 0.421869] [CLF acc:  81% ( 46%), target_acc:  50% ( 46%)]
+[Epoch 0/200] [Batch 111/938] [D loss: 0.790803] [G loss: 0.776753] [CLF acc:  81% ( 47%), target_acc:  56% ( 46%)]
+[Epoch 0/200] [Batch 112/938] [D loss: 0.828590] [G loss: 0.379175] [CLF acc:  82% ( 47%), target_acc:  46% ( 46%)]
+[Epoch 0/200] [Batch 113/938] [D loss: 0.796683] [G loss: 0.499415] [CLF acc:  81% ( 48%), target_acc:  56% ( 46%)]
+[Epoch 0/200] [Batch 114/938] [D loss: 0.810818] [G loss: 0.523512] [CLF acc:  93% ( 49%), target_acc:  42% ( 46%)]
+[Epoch 0/200] [Batch 115/938] [D loss: 0.767568] [G loss: 0.502467] [CLF acc:  84% ( 49%), target_acc:  45% ( 46%)]
+[Epoch 0/200] [Batch 116/938] [D loss: 0.725258] [G loss: 0.506607] [CLF acc:  65% ( 50%), target_acc:  50% ( 46%)]
+[Epoch 0/200] [Batch 117/938] [D loss: 0.688792] [G loss: 0.599826] [CLF acc:  81% ( 50%), target_acc:  51% ( 46%)]
+[Epoch 0/200] [Batch 118/938] [D loss: 0.678226] [G loss: 0.560535] [CLF acc:  82% ( 51%), target_acc:  45% ( 46%)]
+[Epoch 0/200] [Batch 119/938] [D loss: 0.674765] [G loss: 0.698547] [CLF acc:  79% ( 52%), target_acc:  43% ( 46%)]
+[Epoch 0/200] [Batch 120/938] [D loss: 0.686959] [G loss: 0.537788] [CLF acc:  75% ( 52%), target_acc:  51% ( 47%)]
+[Epoch 0/200] [Batch 121/938] [D loss: 0.714783] [G loss: 0.596627] [CLF acc:  79% ( 53%), target_acc:  53% ( 47%)]
+[Epoch 0/200] [Batch 122/938] [D loss: 0.754463] [G loss: 0.559585] [CLF acc:  70% ( 53%), target_acc:  39% ( 47%)]
+[Epoch 0/200] [Batch 123/938] [D loss: 0.786920] [G loss: 0.579977] [CLF acc:  78% ( 54%), target_acc:  50% ( 47%)]
+[Epoch 0/200] [Batch 124/938] [D loss: 0.832218] [G loss: 0.557036] [CLF acc:  82% ( 55%), target_acc:  39% ( 47%)]
+[Epoch 0/200] [Batch 125/938] [D loss: 0.816621] [G loss: 0.655361] [CLF acc:  82% ( 55%), target_acc:  50% ( 47%)]
+[Epoch 0/200] [Batch 126/938] [D loss: 0.754400] [G loss: 0.560878] [CLF acc:  79% ( 56%), target_acc:  42% ( 47%)]
+[Epoch 0/200] [Batch 127/938] [D loss: 0.721202] [G loss: 0.524141] [CLF acc:  79% ( 56%), target_acc:  53% ( 47%)]
+[Epoch 0/200] [Batch 128/938] [D loss: 0.721753] [G loss: 0.538571] [CLF acc:  82% ( 57%), target_acc:  42% ( 47%)]
+[Epoch 0/200] [Batch 129/938] [D loss: 0.714145] [G loss: 0.567600] [CLF acc:  78% ( 58%), target_acc:  37% ( 47%)]
+[Epoch 0/200] [Batch 130/938] [D loss: 0.708376] [G loss: 0.544678] [CLF acc:  89% ( 58%), target_acc:  56% ( 47%)]
+[Epoch 0/200] [Batch 131/938] [D loss: 0.696020] [G loss: 0.548150] [CLF acc:  81% ( 59%), target_acc:  43% ( 47%)]
+[Epoch 0/200] [Batch 132/938] [D loss: 0.684635] [G loss: 0.575972] [CLF acc:  81% ( 59%), target_acc:  48% ( 47%)]
+[Epoch 0/200] [Batch 133/938] [D loss: 0.684195] [G loss: 0.609135] [CLF acc:  85% ( 60%), target_acc:  43% ( 47%)]
+[Epoch 0/200] [Batch 134/938] [D loss: 0.696699] [G loss: 0.527400] [CLF acc:  81% ( 60%), target_acc:  39% ( 47%)]
+[Epoch 0/200] [Batch 135/938] [D loss: 0.709458] [G loss: 0.583326] [CLF acc:  87% ( 61%), target_acc:  46% ( 47%)]
+[Epoch 0/200] [Batch 136/938] [D loss: 0.742347] [G loss: 0.482506] [CLF acc:  78% ( 62%), target_acc:  53% ( 47%)]
+[Epoch 0/200] [Batch 137/938] [D loss: 0.711263] [G loss: 0.608623] [CLF acc:  73% ( 62%), target_acc:  35% ( 47%)]
+[Epoch 0/200] [Batch 138/938] [D loss: 0.658925] [G loss: 0.597337] [CLF acc:  64% ( 63%), target_acc:  43% ( 47%)]
+[Epoch 0/200] [Batch 139/938] [D loss: 0.645315] [G loss: 0.899278] [CLF acc:  75% ( 63%), target_acc:  51% ( 47%)]
+[Epoch 0/200] [Batch 140/938] [D loss: 0.726704] [G loss: 0.388895] [CLF acc:  68% ( 64%), target_acc:  45% ( 47%)]
+[Epoch 0/200] [Batch 141/938] [D loss: 0.843587] [G loss: 1.398149] [CLF acc:  64% ( 64%), target_acc:  48% ( 47%)]
+[Epoch 0/200] [Batch 142/938] [D loss: 1.051174] [G loss: 0.344644] [CLF acc:  70% ( 64%), target_acc:  43% ( 47%)]
+[Epoch 0/200] [Batch 143/938] [D loss: 0.755660] [G loss: 0.623341] [CLF acc:  60% ( 65%), target_acc:  40% ( 47%)]
+[Epoch 0/200] [Batch 144/938] [D loss: 0.808832] [G loss: 1.048307] [CLF acc:  73% ( 65%), target_acc:  42% ( 47%)]

@@ -241,8 +241,7 @@ class encode_Discriminator(nn.Module):
             return layers
 
         self.model = nn.Sequential(
-            *block(512, 64, normalization=False),
-            *block(64, 128),
+            *block(64, 128, normalization=False),
             *block(128, 256),
             *block(256, 512),
             nn.Conv2d(512, 1, 3, 1, 1)
@@ -427,8 +426,8 @@ for epoch in range(opt.n_epochs):
         # Adversarial ground truths
         valid = Variable(FloatTensor(batch_size, *patch).fill_(1.0), requires_grad=False)
         fake = Variable(FloatTensor(batch_size, *patch).fill_(0.0), requires_grad=False)
-        encode_valid = Variable(FloatTensor(batch_size, *patch).fill_(1.0), requires_grad=False)
-        encode_fake = Variable(FloatTensor(batch_size, *patch).fill_(0.0), requires_grad=False)
+        encode_valid = Variable(FloatTensor(512, *patch).fill_(1.0), requires_grad=False)
+        encode_fake = Variable(FloatTensor(512, *patch).fill_(0.0), requires_grad=False)
 
         # Configure input
         imgs_A      = Variable(imgs_A.type(FloatTensor).expand(batch_size, 3, opt.img_size, opt.img_size))
@@ -454,7 +453,7 @@ for epoch in range(opt.n_epochs):
         # Calculate the task loss
         task_loss_ =    (task_loss(label_pred, labels_A) + \
                         task_loss(classifier(imgs_A), labels_A)) / 2
-        
+
         # Loss measures generator's ability to fool the discriminator
         g_loss =    lambda_adv * adversarial_loss(discriminator(decode_fake_B), valid) + \
                     0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) + \
@@ -509,5 +508,5 @@ for epoch in range(opt.n_epochs):
 
         batches_done = len(dataloader_A) * epoch + i
         if batches_done % opt.sample_interval == 0:
-            sample = torch.cat((imgs_A.data[:5], decode_fake_B.data[:5], imgs_B.data[:5]), -2)
+            sample = torch.cat((imgs_A.data[:5], fake_B.data[:5], imgs_B.data[:5]), -2)
             save_image(sample, 'images/%d.png' % batches_done, nrow=int(math.sqrt(batch_size)), normalize=True)

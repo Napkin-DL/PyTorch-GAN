@@ -454,7 +454,7 @@ for epoch in range(opt.n_epochs):
         # Calculate the task loss
         task_loss_ =    (task_loss(label_pred, labels_A) + \
                         task_loss(classifier(imgs_A), labels_A)) / 2
-        
+        print(encode_fake_B.size())
         # Loss measures generator's ability to fool the discriminator
         g_loss =    lambda_adv * adversarial_loss(discriminator(decode_fake_B), valid) + \
                     0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) + \

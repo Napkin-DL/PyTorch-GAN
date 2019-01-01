@@ -67,12 +67,13 @@ class ResidualBlock_back(nn.Module):
     def forward(self, x):
         return x + self.block(x)
 
-class sencode_ResidualBlock(nn.Module):
+
+class encode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
-        super(sencode_ResidualBlock, self).__init__()
+        super(encode_ResidualBlock, self).__init__()
         
         ### ENCODER
-        self.sencode_block = nn.Sequential(
+        self.encode_block = nn.Sequential(
             nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
             nn.BatchNorm2d(4*in_features),
             nn.LeakyReLU(inplace=True),
@@ -81,16 +82,15 @@ class sencode_ResidualBlock(nn.Module):
             nn.LeakyReLU(inplace=True)
         )
         
-        
     def forward(self, x):
-        encode_x = self.sencode_block(x)
-        return x, encode_x    
+        encode_x = self.encode_block(x)
+        return encode_x    
 
-class sdecode_ResidualBlock(nn.Module):
+class decode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
-        super(sdecode_ResidualBlock, self).__init__()
+        super(decode_ResidualBlock, self).__init__()
 
-        self.sdecode_block = nn.Sequential(
+        self.decode_block = nn.Sequential(
             nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
             nn.BatchNorm2d(4*in_features),
             nn.LeakyReLU(inplace=True),
@@ -100,50 +100,11 @@ class sdecode_ResidualBlock(nn.Module):
             
         )
 
-    def forward(self, encode_x):
-        decode_x = self.sdecode_block(encode_x)
+    def forward(self, x, encode_X):
+        decode_x = self.decode_block(encode_x)
         decode_x = decode_x[:, :, :-1, :-1]
         decode_x = F.sigmoid(decode_x)
-        return decode_x  
-
-class tencode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(tencode_ResidualBlock, self).__init__()
-        
-        ### ENCODER
-        self.tencode_block = nn.Sequential(
-            nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.Conv2d(in_channels=4*in_features,out_channels=8*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(8*in_features),
-            nn.LeakyReLU(inplace=True)
-        )
-        
-        
-    def forward(self, x):
-        encode_x = self.tencode_block(x)
-        return x, encode_x    
-
-class tdecode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(tdecode_ResidualBlock, self).__init__()
-
-        self.tdecode_block = nn.Sequential(
-            nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.ConvTranspose2d(in_channels=4*in_features,out_channels=1*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(1*in_features),
-            nn.LeakyReLU(inplace=True),
-            
-        )
-
-    def forward(self, encode_x):
-        decode_x = self.tdecode_block(encode_x)
-        decode_x = decode_x[:, :, :-1, :-1]
-        decode_x = F.sigmoid(decode_x)
-        return decode_x   
+        return x + decode_x   
 
 
 class target_encode_Generator(nn.Module):
@@ -156,17 +117,17 @@ class target_encode_Generator(nn.Module):
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
-            resblocks.append(tencode_ResidualBlock())
+            resblocks.append(encode_ResidualBlock())
         self.tencode_resblocks = nn.Sequential(*resblocks)
 
 
     def forward(self, img, z):
         gen_input = torch.cat((img, self.tfc(z).view(*img.shape)), 1)
         out = self.tl1(gen_input)
-        x, encode_out = self.tencode_resblocks(out)
+        encode_out = self.tencode_resblocks(out)
 
 
-        return x, encode_out
+        return encode_out
 
 
 class source_encode_Generator(nn.Module):
@@ -179,17 +140,17 @@ class source_encode_Generator(nn.Module):
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
-            resblocks.append(sencode_ResidualBlock())
+            resblocks.append(encode_ResidualBlock())
         self.sencode_resblocks = nn.Sequential(*resblocks)
 
 
     def forward(self, img, z):
         gen_input = torch.cat((img, self.sfc(z).view(*img.shape)), 1)
         out = self.sl1(gen_input)
-        x, encode_out = self.sencode_resblocks(out)
+        encode_out = self.sencode_resblocks(out)
 
 
-        return x, encode_out
+        return encode_out
 
 class target_decode_Generator(nn.Module):
     def __init__(self):
@@ -197,14 +158,14 @@ class target_decode_Generator(nn.Module):
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
-            resblocks.append(tdecode_ResidualBlock())
-        self.target_decode_resblocks = nn.Sequential(*resblocks)
+            resblocks.append(ResidualBlock())
+        self.tdecode_resblocks = nn.Sequential(*resblocks)
 
         self.tl2 = nn.Sequential(nn.Conv2d(64, opt.channels, 3, 1, 1), nn.Tanh())
 
 
-    def forward(self, img, encode_out):
-        out = img + self.target_decode_resblocks(encode_out)
+    def forward(self, encode_out):
+        out = self.tdecode_resblocks(encode_out)
         img_ = self.tl2(out)
 
         return img_
@@ -215,14 +176,14 @@ class source_decode_Generator(nn.Module):
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
-            resblocks.append(sdecode_ResidualBlock())
-        self.source_decode_resblocks = nn.Sequential(*resblocks)
+            resblocks.append(ResidualBlock())
+        self.sdecode_resblocks = nn.Sequential(*resblocks)
 
         self.sl2 = nn.Sequential(nn.Conv2d(64, opt.channels, 3, 1, 1), nn.Tanh())
 
 
-    def forward(self, img, encode_out):
-        out = img + self.source_decode_resblocks(encode_out)
+    def forward(self, encode_out):
+        out = self.sdecode_resblocks(encode_out)
         img_ = self.sl2(out)
 
         return img_
@@ -241,11 +202,9 @@ class encode_Discriminator(nn.Module):
             return layers
 
         self.model = nn.Sequential(
-            *block(512, 64, normalization=False),
-            *block(64, 128),
-            *block(128, 256),
-            *block(256, 512),
-            nn.Conv2d(512, 1, 3, 1, 1)
+            *block(256, 512, normalization=False),
+            *block(512, 1024),
+            nn.Conv2d(1024, 1, 3, 1, 1)
         )
 
     def forward(self, encode_x):
@@ -341,7 +300,6 @@ class Classifier(nn.Module):
 
 # Loss function
 adversarial_loss = torch.nn.MSELoss()
-encode_adversarial_loss = torch.nn.MSELoss()
 task_loss = torch.nn.CrossEntropyLoss()
 
 # Loss weights
@@ -366,7 +324,6 @@ if cuda:
     discriminator.cuda()
     classifier.cuda()
     adversarial_loss.cuda()
-    encode_adversarial_loss.cuda()
     task_loss.cuda()
 
 # Initialize weights
@@ -427,8 +384,6 @@ for epoch in range(opt.n_epochs):
         # Adversarial ground truths
         valid = Variable(FloatTensor(batch_size, *patch).fill_(1.0), requires_grad=False)
         fake = Variable(FloatTensor(batch_size, *patch).fill_(0.0), requires_grad=False)
-        encode_valid = Variable(FloatTensor(batch_size, *patch).fill_(1.0), requires_grad=False)
-        encode_fake = Variable(FloatTensor(batch_size, *patch).fill_(0.0), requires_grad=False)
 
         # Configure input
         imgs_A      = Variable(imgs_A.type(FloatTensor).expand(batch_size, 3, opt.img_size, opt.img_size))
@@ -445,8 +400,8 @@ for epoch in range(opt.n_epochs):
         z = Variable(FloatTensor(np.random.uniform(-1, 1, (batch_size, opt.latent_dim))))
 
         # Generate a batch of images
-        imgs_A_x, encode_fake_B = source_encode_generator(imgs_A, z)
-        decode_fake_B = source_decode_generator(imgs_A_x, encode_fake_B)
+        encode_fake_B = target_encode_generator(imgs_A, z)
+        decode_fake_B = target_encode_generator(encode_fake_B)
 
         # Perform task on translated source image
         label_pred = classifier(decode_fake_B)
@@ -454,10 +409,10 @@ for epoch in range(opt.n_epochs):
         # Calculate the task loss
         task_loss_ =    (task_loss(label_pred, labels_A) + \
                         task_loss(classifier(imgs_A), labels_A)) / 2
-        
+
         # Loss measures generator's ability to fool the discriminator
         g_loss =    lambda_adv * adversarial_loss(discriminator(decode_fake_B), valid) + \
-                    0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) + \
+                    0.1 * adversarial_loss(encode_discriminator(encode_fake_B), valid) + \
                     lambda_task * task_loss_
 
         g_loss.backward()
@@ -469,11 +424,11 @@ for epoch in range(opt.n_epochs):
 
         optimizer_D.zero_grad()
 
-        imgs_B_x, encode_real_B = target_encode_generator(imgs_B, z)
-        decode_real_B = target_decode_generator(imgs_B_x, encode_real_B)
+        encode_real_B = target_encode_generator(imgs_B, z)
+        decode_real_B = target_encode_generator(encode_real_B)
         # Measure discriminator's ability to classify real from generated samples
-        encode_real_loss = encode_adversarial_loss(encode_discriminator(encode_real_B), encode_valid)
-        encode_fake_loss = encode_adversarial_loss(encode_discriminator(encode_fake_B.detach()), encode_fake)
+        encode_real_loss = adversarial_loss(encode_discriminator(encode_real_B), valid)
+        encode_fake_loss = adversarial_loss(encode_discriminator(encode_fake_B.detach()), fake)
         decode_real_loss = adversarial_loss(discriminator(decode_real_B), valid)
         decode_fake_loss = adversarial_loss(discriminator(decode_fake_B.detach()), fake)
         encode_d_loss = (encode_real_loss + encode_fake_loss) / 2
@@ -509,5 +464,5 @@ for epoch in range(opt.n_epochs):
 
         batches_done = len(dataloader_A) * epoch + i
         if batches_done % opt.sample_interval == 0:
-            sample = torch.cat((imgs_A.data[:5], decode_fake_B.data[:5], imgs_B.data[:5]), -2)
+            sample = torch.cat((imgs_A.data[:5], fake_B.data[:5], imgs_B.data[:5]), -2)
             save_image(sample, 'images/%d.png' % batches_done, nrow=int(math.sqrt(batch_size)), normalize=True)

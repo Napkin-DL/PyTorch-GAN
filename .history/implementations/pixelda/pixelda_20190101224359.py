@@ -241,11 +241,9 @@ class encode_Discriminator(nn.Module):
             return layers
 
         self.model = nn.Sequential(
-            *block(512, 64, normalization=False),
-            *block(64, 128),
-            *block(128, 256),
-            *block(256, 512),
-            nn.Conv2d(512, 1, 3, 1, 1)
+            *block(256, 512, normalization=False),
+            *block(512, 1024),
+            nn.Conv2d(1024, 1, 3, 1, 1)
         )
 
     def forward(self, encode_x):
@@ -454,12 +452,13 @@ for epoch in range(opt.n_epochs):
         # Calculate the task loss
         task_loss_ =    (task_loss(label_pred, labels_A) + \
                         task_loss(classifier(imgs_A), labels_A)) / 2
-        
+
         # Loss measures generator's ability to fool the discriminator
         g_loss =    lambda_adv * adversarial_loss(discriminator(decode_fake_B), valid) + \
-                    0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) + \
                     lambda_task * task_loss_
-
+        
+        encode_g_loss = 0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) 
+        encode_g_loss.backward()
         g_loss.backward()
         optimizer_G.step()
 
@@ -503,11 +502,11 @@ for epoch in range(opt.n_epochs):
         print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [CLF acc: %3d%% (%3d%%), target_acc: %3d%% (%3d%%)]" %
                                                             (epoch, opt.n_epochs,
                                                             i, len(dataloader_A),
-                                                            d_loss.item(), g_loss.item(),
+                                                            d_loss.item(), g_loss.item(), encode_g_loss.item(),
                                                             100*acc, 100*np.mean(task_performance),
                                                             100*target_acc, 100*np.mean(target_performance)))
 
         batches_done = len(dataloader_A) * epoch + i
         if batches_done % opt.sample_interval == 0:
-            sample = torch.cat((imgs_A.data[:5], decode_fake_B.data[:5], imgs_B.data[:5]), -2)
+            sample = torch.cat((imgs_A.data[:5], fake_B.data[:5], imgs_B.data[:5]), -2)
             save_image(sample, 'images/%d.png' % batches_done, nrow=int(math.sqrt(batch_size)), normalize=True)

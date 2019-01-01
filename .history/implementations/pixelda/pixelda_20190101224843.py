@@ -241,11 +241,9 @@ class encode_Discriminator(nn.Module):
             return layers
 
         self.model = nn.Sequential(
-            *block(512, 64, normalization=False),
-            *block(64, 128),
-            *block(128, 256),
-            *block(256, 512),
-            nn.Conv2d(512, 1, 3, 1, 1)
+            *block(256, 512, normalization=False),
+            *block(512, 1024),
+            nn.Conv2d(1024, 1, 3, 1, 1)
         )
 
     def forward(self, encode_x):
@@ -427,8 +425,8 @@ for epoch in range(opt.n_epochs):
         # Adversarial ground truths
         valid = Variable(FloatTensor(batch_size, *patch).fill_(1.0), requires_grad=False)
         fake = Variable(FloatTensor(batch_size, *patch).fill_(0.0), requires_grad=False)
-        encode_valid = Variable(FloatTensor(batch_size, *patch).fill_(1.0), requires_grad=False)
-        encode_fake = Variable(FloatTensor(batch_size, *patch).fill_(0.0), requires_grad=False)
+        encode_valid = Variable(FloatTensor(512, *patch).fill_(1.0), requires_grad=False)
+        encode_fake = Variable(FloatTensor(512, *patch).fill_(0.0), requires_grad=False)
 
         # Configure input
         imgs_A      = Variable(imgs_A.type(FloatTensor).expand(batch_size, 3, opt.img_size, opt.img_size))
@@ -454,12 +452,13 @@ for epoch in range(opt.n_epochs):
         # Calculate the task loss
         task_loss_ =    (task_loss(label_pred, labels_A) + \
                         task_loss(classifier(imgs_A), labels_A)) / 2
-        
+
         # Loss measures generator's ability to fool the discriminator
         g_loss =    lambda_adv * adversarial_loss(discriminator(decode_fake_B), valid) + \
-                    0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) + \
                     lambda_task * task_loss_
-
+        
+        encode_g_loss = 0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) 
+        encode_g_loss.backward()
         g_loss.backward()
         optimizer_G.step()
 
@@ -500,10 +499,10 @@ for epoch in range(opt.n_epochs):
         if len(target_performance) > 100:
             target_performance.pop(0)
 
-        print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [CLF acc: %3d%% (%3d%%), target_acc: %3d%% (%3d%%)]" %
+        print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f][enc_G loss: %f] [CLF acc: %3d%% (%3d%%), target_acc: %3d%% (%3d%%)]" %
                                                             (epoch, opt.n_epochs,
                                                             i, len(dataloader_A),
-                                                            d_loss.item(), g_loss.item(),
+                                                            d_loss.item(), g_loss.item(), encode_g_loss.item(),
                                                             100*acc, 100*np.mean(task_performance),
                                                             100*target_acc, 100*np.mean(target_performance)))
 
