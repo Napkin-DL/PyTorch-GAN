@@ -64,6 +64,44 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         return x + self.block(x)
 
+
+class ConvolutionalAutoencoder(nn.Module):
+
+    def __init__(self):
+        super(ConvolutionalAutoencoder, self).__init__()
+        
+        # calculate same padding:
+        # (w - k + 2*p)/s + 1 = o
+        # => p = (s(o-1) - w + k)/2
+        
+        ### ENCODER
+        self.encode_block = nn.Sequential(
+            nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
+            nn.BatchNorm2d(4*in_features),
+            nn.LeakyReLU(inplace=True),
+            nn.Conv2d(in_channels=4*in_features,out_channels=8*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
+            nn.BatchNorm2d(8*in_features),
+            nn.LeakyReLU(inplace=True)
+        )
+
+
+        self.decode_block = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
+            nn.BatchNorm2d(4*in_features),
+            nn.LeakyReLU(inplace=True),
+            nn.ConvTranspose2d(in_channels=4*in_features,out_channels=1*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
+            nn.BatchNorm2d(1*in_features),
+            nn.LeakyReLU(inplace=True)
+        )
+
+    def forward(self, x):
+        encode_x = self.encode_block(x)
+        decode_x = self.decode_block(encode_x)
+        decode_x = decode_x[:, :, :-1, :-1]
+        decode_x = F.sigmoid(decode_x)
+        return x + decode_x   
+
+
 class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
@@ -75,6 +113,7 @@ class Generator(nn.Module):
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
+            # resblocks.append(ResidualBlock())
             resblocks.append(ResidualBlock())
         self.resblocks = nn.Sequential(*resblocks)
 
