@@ -328,8 +328,6 @@ if cuda:
     classifier.cuda()
     adversarial_loss.cuda()
     encode_adversarial_loss.cuda()
-    source_recon_loss.cuda()
-    target_recon_loss.cuda()
     task_loss.cuda()
 
 # Initialize weights
@@ -414,8 +412,7 @@ for epoch in range(opt.n_epochs):
 
         # Perform task on translated source image
         label_pred = classifier(decode_fake_B)
-        target_recons = target_recon_loss(imgs_B, decode_real_B)
-        source_recons = source_recon_loss(imgs_A, decode_fake_B)
+        target_recons = 
         # Calculate the task loss
         task_loss_ =    (task_loss(label_pred, labels_A) + \
                         task_loss(classifier(imgs_A), labels_A)) / 2
@@ -423,9 +420,7 @@ for epoch in range(opt.n_epochs):
         # Loss measures generator's ability to fool the discriminator
         g_loss =    lambda_adv * adversarial_loss(discriminator(decode_fake_B), valid) + \
                     0.1 * encode_adversarial_loss(encode_discriminator(encode_fake_B), encode_valid) + \
-                    lambda_task * task_loss_ + \
-                    source_recons + \
-                    target_recons
+                    lambda_task * task_loss_
 
         g_loss.backward()
         optimizer_G.step()
@@ -436,9 +431,9 @@ for epoch in range(opt.n_epochs):
         optimizer_D.zero_grad()
 
         # Measure discriminator's ability to classify real from generated samples
-        encode_real_loss = encode_adversarial_loss(encode_discriminator(encode_real_B.detach()), encode_valid)
+        encode_real_loss = encode_adversarial_loss(encode_discriminator(encode_real_B), encode_valid)
         encode_fake_loss = encode_adversarial_loss(encode_discriminator(encode_fake_B.detach()), encode_fake)
-        decode_real_loss = adversarial_loss(discriminator(decode_real_B.detach()), valid)
+        decode_real_loss = adversarial_loss(discriminator(imgs_B), valid)
         decode_fake_loss = adversarial_loss(discriminator(decode_fake_B.detach()), fake)
         encode_d_loss = (encode_real_loss + encode_fake_loss) / 2
         decode_d_loss = (decode_real_loss + decode_fake_loss) / 2
