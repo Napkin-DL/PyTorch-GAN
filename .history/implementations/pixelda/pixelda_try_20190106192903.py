@@ -52,121 +52,95 @@ def weights_init_normal(m):
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
 
-class ResidualBlock_back(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(ResidualBlock, self).__init__()
+
+class encode_ResidualBlock1(nn.Module):
+    def __init__(self, in_features=32, out_features=64, kernel_size=3, stride=2, padding=1):
+        super(encode_ResidualBlock1, self).__init__()
 
         self.block = nn.Sequential(
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features)
+            nn.Conv2d(in_channels=in_features, out_channels=out_features, kernel_size= kernel_size, stride = stride, padding=padding),
+            nn.BatchNorm2d(out_features),
+            nn.LeakyReLU(0.2, inplace=True)
         )
 
     def forward(self, x):
-        return x + self.block(x)
+        encode_x = self.block(x)
+        return x, encode_x
 
-class sencode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(sencode_ResidualBlock, self).__init__()
-        
-        ### ENCODER
-        self.sencode_block = nn.Sequential(
-            nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.Conv2d(in_channels=4*in_features,out_channels=8*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(8*in_features),
-            nn.LeakyReLU(inplace=True)
+
+class encode_ResidualBlock2(nn.Module):
+    def __init__(self, in_features=64, out_features=128, kernel_size=3, stride=2, padding=1):
+        super(encode_ResidualBlock2, self).__init__()
+
+        self.block = nn.Sequential(
+            nn.Conv2d(in_channels=in_features, out_channels=out_features, kernel_size= kernel_size, stride = stride, padding=padding),
+            nn.BatchNorm2d(out_features),
+            nn.LeakyReLU(0.2, inplace=True)
         )
-        
-        
+
     def forward(self, x):
-        encode_x = self.sencode_block(x)
-        return x, encode_x    
+        encode_x = self.block(x)
+        return encode_x
 
-class sdecode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(sdecode_ResidualBlock, self).__init__()
 
-        self.sdecode_block = nn.Sequential(
-            nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.ConvTranspose2d(in_channels=4*in_features,out_channels=1*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(1*in_features),
-            nn.LeakyReLU(inplace=True),
-            
+class encode_ResidualBlock3(nn.Module):
+    def __init__(self, in_features=128, out_features=256, kernel_size=3, stride=2, padding=1):
+        super(encode_ResidualBlock3, self).__init__()
+
+        self.block = nn.Sequential(
+            nn.Conv2d(in_channels=in_features, out_channels=out_features, kernel_size= kernel_size, stride = stride, padding=padding),
+            nn.BatchNorm2d(out_features),
+            nn.LeakyReLU(0.2, inplace=True)
+        )
+
+    def forward(self, x):
+        encode_x = self.block(x)
+        return encode_x
+
+
+class decode_ResidualBlock1(nn.Module):
+    def __init__(self, in_features=256, out_features=128, kernel_size=3, stride=2, padding=1):
+        super(decode_ResidualBlock1, self).__init__()
+
+        self.block = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=in_features, out_channels=out_features, kernel_size=kernel_size, stride=stride, padding=padding),
+            nn.BatchNorm2d(out_features),
+            nn.LeakyReLU(0.2, inplace=True)
         )
 
     def forward(self, encode_x):
-        decode_x = self.sdecode_block(encode_x)
-        decode_x = decode_x[:, :, :-1, :-1]
-        decode_x = F.sigmoid(decode_x)
-        return decode_x  
+        decode_x = self.block(encode_x)
+        return decode_x
 
-class tencode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(tencode_ResidualBlock, self).__init__()
-        
-        ### ENCODER
-        self.tencode_block = nn.Sequential(
-            nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.Conv2d(in_channels=4*in_features,out_channels=8*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(8*in_features),
-            nn.LeakyReLU(inplace=True)
-        )
-        
-        
-    def forward(self, x):
-        encode_x = self.tencode_block(x)
-        return x, encode_x    
 
-class tdecode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(tdecode_ResidualBlock, self).__init__()
+class decode_ResidualBlock2(nn.Module):
+    def __init__(self, in_features=128, out_features=64, kernel_size=3, stride=2, padding=1):
+        super(decode_ResidualBlock2, self).__init__()
 
-        self.tdecode_block = nn.Sequential(
-            nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.ConvTranspose2d(in_channels=4*in_features,out_channels=1*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(1*in_features),
-            nn.LeakyReLU(inplace=True),
-            
+        self.block = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=in_features, out_channels=out_features, kernel_size=kernel_size, stride=stride, padding=padding),
+            nn.BatchNorm2d(out_features),
+            nn.LeakyReLU(0.2, inplace=True)
         )
 
     def forward(self, encode_x):
-        decode_x = self.tdecode_block(encode_x)
-        decode_x = decode_x[:, :, :-1, :-1]
-        decode_x = F.sigmoid(decode_x)
-        return decode_x   
+        decode_x = self.block(encode_x)
+        return decode_x
 
 
-class target_encode_Generator(nn.Module):
-    def __init__(self):
-        super(target_encode_Generator, self).__init__()
+class decode_ResidualBlock3(nn.Module):
+    def __init__(self, in_features=64, out_features=32, kernel_size=3, stride=2, padding=1):
+        super(decode_ResidualBlock3, self).__init__()
 
-        # Fully-connected layer which constructs image channel shaped output from noise
-        self.tfc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
-        self.tl1 = nn.Sequential(nn.Conv2d(opt.channels*2, 64, 3, 1, 1), nn.ReLU(inplace=True))
+        self.block = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=in_features, out_channels=out_features, kernel_size=kernel_size, stride=stride, padding=padding),
+            nn.BatchNorm2d(out_features),
+            nn.LeakyReLU(0.2, inplace=True)
+        )
 
-        resblocks = []
-        for _ in range(opt.n_residual_blocks):
-            resblocks.append(tencode_ResidualBlock())
-        self.tencode_resblocks = nn.Sequential(*resblocks)
-
-
-    def forward(self, img, z):
-        gen_input = torch.cat((img, self.tfc(z).view(*img.shape)), 1)
-        out = self.tl1(gen_input)
-        x, encode_out = self.tencode_resblocks(out)
-
-
-        return x, encode_out
+    def forward(self, encode_x):
+        decode_x = self.decode_block(encode_x)
+        return decode_x
 
 
 class source_encode_Generator(nn.Module):
@@ -174,56 +148,63 @@ class source_encode_Generator(nn.Module):
         super(source_encode_Generator, self).__init__()
 
         # Fully-connected layer which constructs image channel shaped output from noise
-        self.sfc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
-        self.sl1 = nn.Sequential(nn.Conv2d(opt.channels*2, 64, 3, 1, 1), nn.ReLU(inplace=True))
+        self.fc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
+        self.l1 = nn.Sequential(nn.Conv2d(opt.channels*2, 32, 3, 1, 1), nn.ReLU(inplace=True))
 
-        resblocks = []
-        for _ in range(opt.n_residual_blocks):
-            resblocks.append(sencode_ResidualBlock())
-        self.sencode_resblocks = nn.Sequential(*resblocks)
-
+        self.encode_resblocks1 = encode_ResidualBlock1()
+        self.encode_resblocks2 = encode_ResidualBlock2()
+        self.encode_resblocks3 = encode_ResidualBlock3()
 
     def forward(self, img, z):
-        gen_input = torch.cat((img, self.sfc(z).view(*img.shape)), 1)
-        out = self.sl1(gen_input)
-        x, encode_out = self.sencode_resblocks(out)
+        gen_input = torch.cat((img, self.fc(z).view(*img.shape)), 1)
+        encode_x = self.l1(gen_input)
+        x, encode_out1 = self.encode_resblocks1(encode_x)
+        encode_out2 = self.encode_resblocks2(encode_out1)
+        encode_out3 = self.encode_resblocks3(encode_out2)
+
+        return x, encode_out1, encode_out2, encode_out3
 
 
-        return x, encode_out
-
-class target_decode_Generator(nn.Module):
+class target_encode_Generator(nn.Module):
     def __init__(self):
-        super(target_decode_Generator, self).__init__()
+        super(target_encode_Generator, self).__init__()
 
-        resblocks = []
-        for _ in range(opt.n_residual_blocks):
-            resblocks.append(tdecode_ResidualBlock())
-        self.target_decode_resblocks = nn.Sequential(*resblocks)
+        # Fully-connected layer which constructs image channel shaped output from noise
+        self.fc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
+        self.l1 = nn.Sequential(nn.Conv2d(opt.channels*2, 32, 3, 1, 1), nn.ReLU(inplace=True))
 
-        self.tl2 = nn.Sequential(nn.Conv2d(64, opt.channels, 3, 1, 1), nn.Tanh())
+        self.encode_resblocks1 = encode_ResidualBlock1()
+        self.encode_resblocks2 = encode_ResidualBlock2()
+        self.encode_resblocks3 = encode_ResidualBlock3()
+
+    def forward(self, img, z):
+        gen_input = torch.cat((img, self.fc(z).view(*img.shape)), 1)
+        encode_x = self.l1(gen_input)
+        x, encode_out1 = self.encode_resblocks1(encode_x)
+        encode_out2 = self.encode_resblocks2(encode_out1)
+        encode_out3 = self.encode_resblocks3(encode_out2)
+
+        return x, encode_out1, encode_out2, encode_out3
 
 
-    def forward(self, img, encode_out):
-        out = img + self.target_decode_resblocks(encode_out)
-        img_ = self.tl2(out)
-
-        return img_
-
-class source_decode_Generator(nn.Module):
+class decode_Generator(nn.Module):
     def __init__(self):
-        super(source_decode_Generator, self).__init__()
+        super(decode_Generator, self).__init__()
 
-        resblocks = []
-        for _ in range(opt.n_residual_blocks):
-            resblocks.append(sdecode_ResidualBlock())
-        self.source_decode_resblocks = nn.Sequential(*resblocks)
+        # Fully-connected layer which constructs image channel shaped output from noise
+        self.decode_resblocks1 = decode_ResidualBlock1()
+        self.decode_resblocks2 = decode_ResidualBlock2()
+        self.decode_resblocks3 = decode_ResidualBlock3()
 
-        self.sl2 = nn.Sequential(nn.Conv2d(64, opt.channels, 3, 1, 1), nn.Tanh())
+        self.l2 = nn.Sequential(nn.Conv2d(32, opt.channels, 3, 1, 1), nn.Tanh())
 
-
-    def forward(self, img, encode_out):
-        out = img + self.source_decode_resblocks(encode_out)
-        img_ = self.sl2(out)
+    def forward(self, x, encode_out1, encode_out2, encode_out3):
+        decode_out1 = self.decode_resblocks1(encode_out3)
+        decode_out2 = self.decode_resblocks2(decode_out1+encode_out2)
+        decode_out3 = self.decode_resblocks3(decode_out2+encode_out1)
+        decode_x = F.sigmoid(decode_out3)
+        out = img + decode_x
+        img_ = self.l2(out)
 
         return img_
 
@@ -278,36 +259,6 @@ class Discriminator(nn.Module):
 
         return validity
 
-class encode_Classifier(nn.Module):
-    def __init__(self):
-        super(encode_Classifier, self).__init__()
-
-        def block(in_features, out_features, normalization=True):
-            """Classifier block"""
-            layers = [  nn.Conv2d(in_features, out_features, 3, stride=2, padding=1),
-                        nn.LeakyReLU(0.2, inplace=True) ]
-            if normalization:
-                layers.append(nn.InstanceNorm2d(out_features))
-            return layers
-
-        self.model = nn.Sequential(
-            *block(256, 512, normalization=False),
-            *block(512, 1024)
-            *block(1024, 2048)
-        )
-
-        input_size = opt.img_size // 2**4
-        self.output_layer = nn.Sequential(
-            nn.Linear(2048*input_size**2, opt.n_classes),
-            nn.Softmax()
-        )
-
-    def forward(self, img):
-        feature_repr = self.model(img)
-        feature_repr = feature_repr.view(feature_repr.size(0), -1)
-        label = self.output_layer(feature_repr)
-        return label
-
 class Classifier(nn.Module):
     def __init__(self):
         super(Classifier, self).__init__()
@@ -350,18 +301,18 @@ lambda_task = 0.1
 
 # Initialize generator and discriminator
 target_encode_generator = target_encode_Generator()
-target_decode_generator = target_decode_Generator()
 source_encode_generator = source_encode_Generator()
-source_decode_generator = source_decode_Generator()
+decode_generator = decode_Generator()
+
 encode_discriminator = encode_Discriminator()
 discriminator = Discriminator()
 classifier = Classifier()
 
 if cuda:
     target_encode_generator.cuda()
-    target_decode_generator.cuda()
     source_encode_generator.cuda()
-    source_decode_generator.cuda()
+    decode_generator.cuda()
+
     encode_discriminator.cuda()
     discriminator.cuda()
     classifier.cuda()
@@ -371,9 +322,8 @@ if cuda:
 
 # Initialize weights
 target_encode_generator.apply(weights_init_normal)
-target_decode_generator.apply(weights_init_normal)
 source_encode_generator.apply(weights_init_normal)
-source_decode_generator.apply(weights_init_normal)
+decode_generator.apply(weights_init_normal)
 encode_discriminator.apply(weights_init_normal)
 discriminator.apply(weights_init_normal)
 classifier.apply(weights_init_normal)
@@ -402,8 +352,8 @@ dataloader_B = torch.utils.data.DataLoader(
 # Optimizers
 
 optimizer_G = torch.optim.Adam( itertools.chain(target_encode_generator.parameters(), 
-                                source_encode_generator.parameters(), target_decode_generator.parameters(), 
-                                source_decode_generator.parameters(),
+                                source_encode_generator.parameters(),
+                                decode_generator.parameters(),
                                 classifier.parameters()),
                                 lr=opt.lr, betas=(opt.b1, opt.b2))
 optimizer_D = torch.optim.Adam(itertools.chain(encode_discriminator.parameters(), discriminator.parameters()), lr=opt.lr, betas=(opt.b1, opt.b2))
@@ -445,8 +395,9 @@ for epoch in range(opt.n_epochs):
         z = Variable(FloatTensor(np.random.uniform(-1, 1, (batch_size, opt.latent_dim))))
 
         # Generate a batch of images
-        imgs_A_x, encode_fake_B = source_encode_generator(imgs_A, z)
-        decode_fake_B = source_decode_generator(imgs_A_x, encode_fake_B)
+        imgs_A_x, encode_1, encode_2, encode_fake_B = source_encode_generator(imgs_A, z)
+        
+        decode_fake_B = decode_generator(imgs_A, imgs_A_x, encode_1, encode_2, encode_fake_B)
 
         # Perform task on translated source image
         label_pred = classifier(decode_fake_B)
@@ -470,7 +421,7 @@ for epoch in range(opt.n_epochs):
         optimizer_D.zero_grad()
 
         imgs_B_x, encode_real_B = source_encode_generator(imgs_B, z)
-        decode_real_B = target_decode_generator(imgs_B_x, encode_real_B)
+        decode_real_B = decode_generator(imgs_B_x, encode_real_B)
         # Measure discriminator's ability to classify real from generated samples
         encode_real_loss = encode_adversarial_loss(encode_discriminator(encode_real_B), encode_valid)
         encode_fake_loss = encode_adversarial_loss(encode_discriminator(encode_fake_B.detach()), encode_fake)

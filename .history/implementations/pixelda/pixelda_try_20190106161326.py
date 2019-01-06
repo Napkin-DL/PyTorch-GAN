@@ -52,22 +52,8 @@ def weights_init_normal(m):
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
 
-class ResidualBlock_back(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(ResidualBlock, self).__init__()
 
-        self.block = nn.Sequential(
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features)
-        )
-
-    def forward(self, x):
-        return x + self.block(x)
-
-class sencode_ResidualBlock(nn.Module):
+class source_encode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
         super(sencode_ResidualBlock, self).__init__()
         

@@ -52,27 +52,13 @@ def weights_init_normal(m):
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
 
-class ResidualBlock_back(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(ResidualBlock, self).__init__()
 
-        self.block = nn.Sequential(
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features)
-        )
-
-    def forward(self, x):
-        return x + self.block(x)
-
-class sencode_ResidualBlock(nn.Module):
+class source_encode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
         super(sencode_ResidualBlock, self).__init__()
         
         ### ENCODER
-        self.sencode_block = nn.Sequential(
+        self.encode_block = nn.Sequential(
             nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
             nn.BatchNorm2d(4*in_features),
             nn.LeakyReLU(inplace=True),
@@ -83,32 +69,13 @@ class sencode_ResidualBlock(nn.Module):
         
         
     def forward(self, x):
-        encode_x = self.sencode_block(x)
+        encode_x = self.encode_block(x)
         return x, encode_x    
 
-class sdecode_ResidualBlock(nn.Module):
+
+class target_encode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
-        super(sdecode_ResidualBlock, self).__init__()
-
-        self.sdecode_block = nn.Sequential(
-            nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.ConvTranspose2d(in_channels=4*in_features,out_channels=1*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(1*in_features),
-            nn.LeakyReLU(inplace=True),
-            
-        )
-
-    def forward(self, encode_x):
-        decode_x = self.sdecode_block(encode_x)
-        decode_x = decode_x[:, :, :-1, :-1]
-        decode_x = F.sigmoid(decode_x)
-        return decode_x  
-
-class tencode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(tencode_ResidualBlock, self).__init__()
+        super(target_encode_ResidualBlock, self).__init__()
         
         ### ENCODER
         self.tencode_block = nn.Sequential(

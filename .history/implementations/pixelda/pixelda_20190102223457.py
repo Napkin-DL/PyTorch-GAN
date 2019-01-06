@@ -469,8 +469,8 @@ for epoch in range(opt.n_epochs):
 
         optimizer_D.zero_grad()
 
-        imgs_B_x, encode_real_B = source_encode_generator(imgs_B, z)
-        decode_real_B = target_decode_generator(imgs_B_x, encode_real_B)
+        imgs_B_x, encode_real_B = target_encode_generator(imgs_B, z)
+        decode_real_B = source_decode_generator(imgs_B_x, encode_real_B)
         # Measure discriminator's ability to classify real from generated samples
         encode_real_loss = encode_adversarial_loss(encode_discriminator(encode_real_B), encode_valid)
         encode_fake_loss = encode_adversarial_loss(encode_discriminator(encode_fake_B.detach()), encode_fake)

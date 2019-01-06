@@ -52,27 +52,13 @@ def weights_init_normal(m):
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
 
-class ResidualBlock_back(nn.Module):
+
+class source_encode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
-        super(ResidualBlock, self).__init__()
-
-        self.block = nn.Sequential(
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(in_features, in_features, 3, 1, 1),
-            nn.BatchNorm2d(in_features)
-        )
-
-    def forward(self, x):
-        return x + self.block(x)
-
-class sencode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(sencode_ResidualBlock, self).__init__()
+        super(source_encode_ResidualBlock, self).__init__()
         
         ### ENCODER
-        self.sencode_block = nn.Sequential(
+        self.encode_block = nn.Sequential(
             nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
             nn.BatchNorm2d(4*in_features),
             nn.LeakyReLU(inplace=True),
@@ -83,35 +69,16 @@ class sencode_ResidualBlock(nn.Module):
         
         
     def forward(self, x):
-        encode_x = self.sencode_block(x)
+        encode_x = self.encode_block(x)
         return x, encode_x    
 
-class sdecode_ResidualBlock(nn.Module):
+
+class target_encode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
-        super(sdecode_ResidualBlock, self).__init__()
-
-        self.sdecode_block = nn.Sequential(
-            nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
-            nn.BatchNorm2d(4*in_features),
-            nn.LeakyReLU(inplace=True),
-            nn.ConvTranspose2d(in_channels=4*in_features,out_channels=1*in_features,kernel_size=(3, 3),stride=(2, 2),padding=1),
-            nn.BatchNorm2d(1*in_features),
-            nn.LeakyReLU(inplace=True),
-            
-        )
-
-    def forward(self, encode_x):
-        decode_x = self.sdecode_block(encode_x)
-        decode_x = decode_x[:, :, :-1, :-1]
-        decode_x = F.sigmoid(decode_x)
-        return decode_x  
-
-class tencode_ResidualBlock(nn.Module):
-    def __init__(self, in_features=64, out_features=64):
-        super(tencode_ResidualBlock, self).__init__()
+        super(target_encode_ResidualBlock, self).__init__()
         
         ### ENCODER
-        self.tencode_block = nn.Sequential(
+        self.encode_block = nn.Sequential(
             nn.Conv2d(in_channels=1*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2),padding=0),
             nn.BatchNorm2d(4*in_features),
             nn.LeakyReLU(inplace=True),
@@ -122,14 +89,14 @@ class tencode_ResidualBlock(nn.Module):
         
         
     def forward(self, x):
-        encode_x = self.tencode_block(x)
+        encode_x = self.encode_block(x)
         return x, encode_x    
 
-class tdecode_ResidualBlock(nn.Module):
+class decode_ResidualBlock(nn.Module):
     def __init__(self, in_features=64, out_features=64):
-        super(tdecode_ResidualBlock, self).__init__()
+        super(decode_ResidualBlock, self).__init__()
 
-        self.tdecode_block = nn.Sequential(
+        self.decode_block = nn.Sequential(
             nn.ConvTranspose2d(in_channels=8*in_features,out_channels=4*in_features,kernel_size=(3, 3),stride=(2, 2), padding=0),
             nn.BatchNorm2d(4*in_features),
             nn.LeakyReLU(inplace=True),
@@ -140,7 +107,7 @@ class tdecode_ResidualBlock(nn.Module):
         )
 
     def forward(self, encode_x):
-        decode_x = self.tdecode_block(encode_x)
+        decode_x = self.decode_block(encode_x)
         decode_x = decode_x[:, :, :-1, :-1]
         decode_x = F.sigmoid(decode_x)
         return decode_x   
@@ -151,19 +118,19 @@ class target_encode_Generator(nn.Module):
         super(target_encode_Generator, self).__init__()
 
         # Fully-connected layer which constructs image channel shaped output from noise
-        self.tfc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
-        self.tl1 = nn.Sequential(nn.Conv2d(opt.channels*2, 64, 3, 1, 1), nn.ReLU(inplace=True))
+        self.fc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
+        self.l1 = nn.Sequential(nn.Conv2d(opt.channels*2, 64, 3, 1, 1), nn.ReLU(inplace=True))
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
-            resblocks.append(tencode_ResidualBlock())
-        self.tencode_resblocks = nn.Sequential(*resblocks)
+            resblocks.append(target_encode_ResidualBlock())
+        self.encode_resblocks = nn.Sequential(*resblocks)
 
 
     def forward(self, img, z):
-        gen_input = torch.cat((img, self.tfc(z).view(*img.shape)), 1)
-        out = self.tl1(gen_input)
-        x, encode_out = self.tencode_resblocks(out)
+        gen_input = torch.cat((img, self.fc(z).view(*img.shape)), 1)
+        out = self.l1(gen_input)
+        x, encode_out = self.encode_resblocks(out)
 
 
         return x, encode_out
@@ -174,56 +141,39 @@ class source_encode_Generator(nn.Module):
         super(source_encode_Generator, self).__init__()
 
         # Fully-connected layer which constructs image channel shaped output from noise
-        self.sfc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
-        self.sl1 = nn.Sequential(nn.Conv2d(opt.channels*2, 64, 3, 1, 1), nn.ReLU(inplace=True))
+        self.fc = nn.Linear(opt.latent_dim, opt.channels*opt.img_size**2)
+        self.l1 = nn.Sequential(nn.Conv2d(opt.channels*2, 64, 3, 1, 1), nn.ReLU(inplace=True))
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
-            resblocks.append(sencode_ResidualBlock())
-        self.sencode_resblocks = nn.Sequential(*resblocks)
+            resblocks.append(source_encode_ResidualBlock())
+        self.encode_resblocks = nn.Sequential(*resblocks)
 
 
     def forward(self, img, z):
-        gen_input = torch.cat((img, self.sfc(z).view(*img.shape)), 1)
-        out = self.sl1(gen_input)
-        x, encode_out = self.sencode_resblocks(out)
+        gen_input = torch.cat((img, self.fc(z).view(*img.shape)), 1)
+        out = self.l1(gen_input)
+        x, encode_out = self.encode_resblocks(out)
 
 
         return x, encode_out
 
-class target_decode_Generator(nn.Module):
+
+class decode_Generator(nn.Module):
     def __init__(self):
-        super(target_decode_Generator, self).__init__()
-
-        resblocks = []
-        for _ in range(opt.n_residual_blocks):
-            resblocks.append(tdecode_ResidualBlock())
-        self.target_decode_resblocks = nn.Sequential(*resblocks)
-
-        self.tl2 = nn.Sequential(nn.Conv2d(64, opt.channels, 3, 1, 1), nn.Tanh())
-
-
-    def forward(self, img, encode_out):
-        out = img + self.target_decode_resblocks(encode_out)
-        img_ = self.tl2(out)
-
-        return img_
-
-class source_decode_Generator(nn.Module):
-    def __init__(self):
-        super(source_decode_Generator, self).__init__()
+        super(decode_Generator, self).__init__()
 
         resblocks = []
         for _ in range(opt.n_residual_blocks):
             resblocks.append(sdecode_ResidualBlock())
-        self.source_decode_resblocks = nn.Sequential(*resblocks)
+        self.decode_resblocks = nn.Sequential(*resblocks)
 
-        self.sl2 = nn.Sequential(nn.Conv2d(64, opt.channels, 3, 1, 1), nn.Tanh())
+        self.l2 = nn.Sequential(nn.Conv2d(64, opt.channels, 3, 1, 1), nn.Tanh())
 
 
     def forward(self, img, encode_out):
-        out = img + self.source_decode_resblocks(encode_out)
-        img_ = self.sl2(out)
+        out = img + self.decode_resblocks(encode_out)
+        img_ = self.l2(out)
 
         return img_
 
